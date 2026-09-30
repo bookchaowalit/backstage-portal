@@ -85,6 +85,60 @@ describe('app-config', () => {
     }
   });
 
+  it('development keeps the guest provider for local sign-in', async () => {
+    const { reader } = await loadConfig(['app-config.yaml']);
+    expect(reader.getOptionalString('auth.environment') ?? 'development').toBe(
+      'development',
+    );
+    expect(reader.has('auth.providers.guest')).toBe(true);
+  });
+
+  it('production signs in with GitHub OAuth from env-substituted secrets', async () => {
+    const { reader, substituted } = await loadConfig([
+      'app-config.yaml',
+      'app-config.production.yaml',
+    ]);
+    const environment = reader.getString('auth.environment');
+    expect(environment).toBe('production');
+
+    // OAuth providers select the block named after auth.environment.
+    const github = reader.getConfig(`auth.providers.github.${environment}`);
+    expect(github.getString('clientId')).toBe('test-AUTH_GITHUB_CLIENT_ID');
+    expect(github.getString('clientSecret')).toBe(
+      'test-AUTH_GITHUB_CLIENT_SECRET',
+    );
+    expect(substituted.has('AUTH_GITHUB_CLIENT_ID')).toBe(true);
+    expect(substituted.has('AUTH_GITHUB_CLIENT_SECRET')).toBe(true);
+
+    const resolvers = github
+      .getConfigArray('signIn.resolvers')
+      .map(resolver => resolver.getString('resolver'));
+    expect(resolvers.length).toBeGreaterThan(0);
+    // Never let unknown GitHub users in without a catalog User entity.
+    for (const resolver of github.getConfigArray('signIn.resolvers')) {
+      expect(
+        resolver.getOptionalBoolean(
+          'dangerouslyAllowSignInWithoutUserInCatalog',
+        ) ?? false,
+      ).toBe(false);
+    }
+
+    // Guest may stay registered from the base config, but must never be
+    // forced on outside development.
+    expect(
+      reader.getOptionalBoolean(
+        'auth.providers.guest.dangerouslyAllowOutsideDevelopment',
+      ) ?? false,
+    ).toBe(false);
+  });
+
+  it('production auth provider ids are registered by the backend', () => {
+    const index = fs.readFileSync(path.join(__dirname, 'index.ts'), 'utf8');
+    expect(index).toContain(
+      "import('@backstage/plugin-auth-backend-module-github-provider')",
+    );
+  });
+
   it('keeps the committed config free of literal credentials', () => {
     const credentialPattern =
       /\b(gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)/;

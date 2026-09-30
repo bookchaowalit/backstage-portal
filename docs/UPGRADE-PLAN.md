@@ -2,16 +2,16 @@
 
 ## Current state
 
-Score: 5/10 (was 3/10) — builds, typechecks, lints and tests cleanly with CI
-and config guard tests, but it is still the upstream scaffold: example
-catalog data, guest-only auth, placeholder owner/org.
+Score: 6/10 (5 after pass 1, 3 before) — builds, typechecks, lints and tests
+cleanly with CI; production now has a real GitHub OAuth sign-in path, but the
+catalog is still example data with a placeholder owner/org.
 
 ## Backlog
 
-- P0: Production auth. `app-config.production.yaml` enables only the guest
-  provider, which Backstage refuses outside development; add a real provider
-  (e.g. GitHub, the module is already a backend dependency) and a sign-in
-  resolver before any hosted deploy.
+- P0: Before a hosted deploy, add a catalog `User` entity named after the
+  owner's GitHub login (the production resolver rejects users without one)
+  and register the GitHub OAuth app; secrets come from
+  `AUTH_GITHUB_CLIENT_ID` / `AUTH_GITHUB_CLIENT_SECRET`.
 - P1: Replace the example catalog with Solo Empire entities (a `Location`
   pointing at each repo's `catalog-info.yaml`, or a GitHub discovery
   provider) and a real `org.yaml`; set `organization.name` and the owner in
@@ -35,3 +35,17 @@ catalog data, guest-only auth, placeholder owner/org.
   tests, backend build.
 - README rewritten from the scaffold text; catalog-info description and
   GitHub slug annotation set.
+
+## Done in this pass (pass 2)
+
+- Production auth: `app-config.production.yaml` sets
+  `auth.environment: production` and configures the GitHub provider from
+  `${AUTH_GITHUB_CLIENT_ID}` / `${AUTH_GITHUB_CLIENT_SECRET}` with the
+  `usernameMatchingUserEntityName` resolver; the backend registers
+  `plugin-auth-backend-module-github-provider`. Dev keeps guest.
+- Frontend `modules/signIn` replaces the guest-only default sign-in page:
+  guest + GitHub in development, GitHub only otherwise.
+- Tests: config tests for dev guest, prod GitHub env substitution, no
+  catalog-less sign-in fallback, no guest outside development; provider
+  selection unit tests and a rendered sign-in page test per environment.
+  `backstage-cli config:check --lax` passes for the production config.

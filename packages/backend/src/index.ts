@@ -27,7 +27,11 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-auth-backend'));
 // See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
-// See https://backstage.io/docs/auth/guest/provider
+// See https://backstage.io/docs/auth/guest/provider (development only; the
+// provider refuses to authenticate when NODE_ENV is not "development").
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+// See https://backstage.io/docs/auth/github/provider (production sign-in; only
+// initialized when auth.providers.github is configured).
 
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
