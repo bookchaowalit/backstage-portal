@@ -51,7 +51,8 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.36.5"
+    "@backstage/cli": "^0.36.5",
+    "@backstage/config-loader": "^1.11.2"
   },
   "files": [
     "dist"
