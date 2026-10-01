@@ -133,10 +133,26 @@ describe('app-config', () => {
   });
 
   it('production auth provider ids are registered by the backend', () => {
-    const index = fs.readFileSync(path.join(__dirname, 'index.ts'), 'utf8');
+    const index = fs.readFileSync(path.join(__dirname, 'features.ts'), 'utf8');
     expect(index).toContain(
-      "import('@backstage/plugin-auth-backend-module-github-provider')",
+      "from '@backstage/plugin-auth-backend-module-github-provider'",
     );
+  });
+
+  it('development backend listens on loopback only', async () => {
+    // Dev signs anyone in as guest with an allow-all permission policy.
+    const { reader } = await loadConfig(['app-config.yaml']);
+    expect(reader.getString('backend.listen.host')).toBe('127.0.0.1');
+  });
+
+  it('production listens on all interfaces inside the container only', async () => {
+    const { reader } = await loadConfig([
+      'app-config.yaml',
+      'app-config.production.yaml',
+    ]);
+    // ':7007' replaces the dev listen block; exposure is decided by the
+    // container's published port, not by the dev loopback host.
+    expect(reader.get('backend.listen')).toBe(':7007');
   });
 
   it('keeps the committed config free of literal credentials', () => {

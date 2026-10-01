@@ -49,3 +49,19 @@ catalog is still example data with a placeholder owner/org.
   catalog-less sign-in fallback, no guest outside development; provider
   selection unit tests and a rendered sign-in page test per environment.
   `backstage-cli config:check --lax` passes for the production config.
+- Route access matrix: the plugin list moved to
+  `packages/backend/src/features.ts` (index.ts adds it unchanged).
+  `routeAccess.test.ts` starts that list with the committed
+  `app-config.yaml` via `startTestBackend` (anonymous requests stay
+  anonymous), requires every installed plugin to be classified, and calls
+  catalog/scaffolder/techdocs/search/kubernetes/user-settings/
+  notifications/permission/mcp-actions/proxy writes and reads as anonymous
+  (401), user and service (past auth). Public by design: app static config,
+  auth sign-in endpoints, signals (WebSocket upgrade checks its own token).
+  No unprotected write route found. Dev deps: `@backstage/backend-test-utils`
+  1.11.6 (matches backend-defaults 0.17), `supertest`.
+- Network: dev `backend.listen.host` is `127.0.0.1` (guest sign-in +
+  allow-all policy must not be reachable from the LAN); production keeps
+  `':7007'` inside the container. Both pinned in `appConfig.test.ts`.
+- Verified: `yarn install --immutable`, tsc, lint:all, prettier, 38 tests,
+  `build:backend`.
