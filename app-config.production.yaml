@@ -29,8 +29,21 @@ backend:
       #     $file: <file-path>/ca/server.crt
 
 auth:
+  # Selects the `production` block of each OAuth provider below; the app's
+  # sign-in page offers only GitHub when this is not "development".
+  environment: production
   providers:
-    guest: {}
+    # The guest provider from app-config.yaml stays registered but refuses to
+    # authenticate outside NODE_ENV=development; GitHub is the real sign-in.
+    # https://backstage.io/docs/auth/github/provider
+    github:
+      production:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        signIn:
+          resolvers:
+            # The GitHub login must match a User entity name in the catalog.
+            - resolver: usernameMatchingUserEntityName
 
 catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.

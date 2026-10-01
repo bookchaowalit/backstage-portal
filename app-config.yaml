@@ -109,8 +109,11 @@ backend:
   baseUrl: http://localhost:7007
   listen:
     port: 7007
-    # Uncomment the following host directive to bind to specific interfaces
-    # host: 127.0.0.1
+    # Loopback only for local development: the guest provider signs anyone in
+    # here and the permission policy is allow-all, so the dev backend must not
+    # be reachable from the LAN. app-config.production.yaml listens on ':7007'
+    # inside the container, where the published port decides exposure.
+    host: 127.0.0.1
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
