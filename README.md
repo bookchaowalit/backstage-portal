@@ -1,4 +1,4 @@
-# solo-empire-backstage
+# backstage-portal
 
 Backstage developer portal for Solo Empire: a software catalog, scaffolder
 templates, TechDocs, and search over the Solo Empire repositories.
