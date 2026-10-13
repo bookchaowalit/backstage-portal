@@ -4,7 +4,7 @@ metadata:
   name: solo-empire-backstage
   description: Solo Empire developer portal (Backstage catalog, scaffolder, TechDocs).
   annotations:
-    github.com/project-slug: bookchaowalit/platform-developer-portal
+    github.com/project-slug: bookchaowalit/backstage-portal
 spec:
   type: website
   owner: john@example.com
