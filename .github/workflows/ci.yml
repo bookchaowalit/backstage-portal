@@ -1,3 +1,6 @@
+# CI + security baseline (DevSecOps Phase 1). Public repository: GitHub-hosted runners.
+# The app job stays local to this repository: the shared ci-node.yml workflow supports npm and
+# pnpm only, and this Backstage monorepo uses Yarn Berry (Corepack, yarn.lock).
 name: CI
 
 on:
@@ -9,16 +12,22 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
       - name: Enable Corepack
@@ -35,3 +44,6 @@ jobs:
         run: yarn test
       - name: Build backend bundle
         run: yarn build:backend
+
+  security:
+    uses: bookchaowalit/platform-ci-workflows/.github/workflows/security.yml@c37ef9d113eefb3ed45429717cb7ca201192c3fc # v1.0.1

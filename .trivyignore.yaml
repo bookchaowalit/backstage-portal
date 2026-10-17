@@ -1,0 +1,20 @@
+# Accepted Trivy findings. Each entry needs a statement; review them when the file changes.
+# Same advisories as osv-scanner.toml (see the reasons there); both expire on 2027-01-17.
+vulnerabilities:
+  - id: CVE-2026-104852
+    paths:
+      - yarn.lock
+    expired_at: 2027-01-17
+    statement: >-
+      @graphql-tools/utils 8.x (GHSA-7mx3-vvmw-hjmv), fixed only in 12.x. Pulled in by
+      mockttp 3 via @backstage/backend-openapi-utils (OpenAPI test/validation helpers).
+      The portal serves no GraphQL API and never merges request data through graphql-tools.
+      Waiting on Backstage upstream to move to a fixed major.
+  - id: CVE-2026-102990
+    paths:
+      - yarn.lock
+    expired_at: 2027-01-17
+    statement: >-
+      basic-ftp 5.x (GHSA-c475-qrg2-pj4r), fixed only in 6.x. Path:
+      @backstage/backend-openapi-utils -> mockttp -> pac-proxy-agent -> get-uri 6.
+      The portal never connects to FTP servers. Waiting on get-uri/mockttp upstream.
