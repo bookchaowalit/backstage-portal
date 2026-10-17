@@ -1,0 +1,123 @@
+# Reviewed OSV-Scanner exceptions. Each entry needs a reason and an expiry.
+# Context: Backstage 1.55.3 (latest stable release, see backstage.json). Every advisory below
+# either has no fixed release at all, or is fixed only in a new major version of a transitive
+# dependency that the Backstage packages pin to an older major. Overriding those across a
+# major would change APIs inside Backstage code we do not own. Re-check on each Backstage
+# release bump (Renovate) and at the expiry date.
+
+[[IgnoredVulns]]
+id = "GHSA-7mx3-vvmw-hjmv"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """@graphql-tools/utils 8.x mergeDeep prototype pollution; fixed only in 12.x. Pulled in by \
+mockttp 3 via @backstage/backend-openapi-utils (OpenAPI test/validation helpers). This portal \
+serves no GraphQL API and never merges request data through graphql-tools. Waiting on Backstage to \
+move mockttp/graphql-tools to a fixed major."""
+
+[[IgnoredVulns]]
+id = "GHSA-c475-qrg2-pj4r"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """basic-ftp 5.x Client.list() CPU DoS on crafted FTP directory listings; fixed only in 6.x. \
+Path: @backstage/backend-openapi-utils -> mockttp -> pac-proxy-agent -> get-uri 6 -> basic-ftp ^5. \
+The portal never connects to FTP servers (no ftp:// PAC or URL reader configured). Waiting on \
+get-uri/mockttp upstream."""
+
+[[IgnoredVulns]]
+id = "GHSA-h5c3-5r3r-rr8q"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """@octokit/plugin-paginate-rest 6.x ReDoS (fixed in 9.2.2 / 11.4.1). Pulled in by \
+@octokit/rest 19 via @backstage/integration and the GitHub scaffolder module, which pin the old \
+Octokit major. The regex runs on GitHub API Link headers, i.e. responses from api.github.com, not \
+on end-user input. Waiting on Backstage to move to a fixed Octokit major."""
+
+[[IgnoredVulns]]
+id = "GHSA-rmvr-2pp2-xj38"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """@octokit/request 6.x ReDoS in fetchWrapper (fixed in 8.4.1 / 9.2.1). Same old Octokit \
+major pinned by @backstage/integration (@octokit/rest 19, @octokit/auth-app 4). Input is the \
+GitHub API response, not end-user input. Waiting on Backstage upstream."""
+
+[[IgnoredVulns]]
+id = "GHSA-xx4v-prfh-6cgc"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """@octokit/request-error 3.x ReDoS (fixed in 5.1.1 / 6.1.7). Same old Octokit major pinned \
+by @backstage/integration; the regex runs on GitHub API error responses. Waiting on Backstage \
+upstream."""
+
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """braces <=3.0.3 stack exhaustion on deeply nested brace patterns. No fixed release exists \
+(3.0.3 is the latest). Reached through micromatch/fast-glob/chokidar in the Backstage CLI and \
+config-loader file watching, which expand glob patterns from this repository's own config, never \
+request input. Re-check when braces ships a fix."""
+
+[[IgnoredVulns]]
+id = "GHSA-848j-6mx2-7j84"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """elliptic 6.6.1 risky primitive implementation. No fixed release exists. Only reachable via \
+crypto-browserify (node-stdlib-browser polyfills in the Backstage CLI webpack/rspack build); the \
+portal does no ECDSA/ECDH signing or verification in the browser. Re-check when elliptic ships a fix \
+or Backstage drops the crypto polyfill."""
+
+[[IgnoredVulns]]
+id = "GHSA-5v7r-6r5c-r473"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """file-type 16.x ASF parser infinite loop (fixed only in 21.x, ESM-only). Pulled in by \
+@trendyol-js/openstack-swift-sdk via @backstage/plugin-techdocs-node, used only by the OpenStack \
+Swift TechDocs publisher. This portal uses the local publisher (techdocs.publisher.type: local), so \
+the Swift SDK never parses files. Waiting on Backstage upstream."""
+
+[[IgnoredVulns]]
+id = "GHSA-ch52-4w7c-c8xp"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """http-cache-semantics max-stale cross-user cache disclosure. No fixed release exists. Only \
+used by HTTP caches inside dev tooling (Backstage CLI package-manager module: @yarnpkg/core -> got \
+-> cacheable-request, and sigstore -> make-fetch-happen), which run on a developer machine or CI \
+with one user, not in the portal's request path. Re-check when a fix ships."""
+
+[[IgnoredVulns]]
+id = "GHSA-86w9-cpqp-85rv"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """node-forge 1.4.0 PKCS#1 v1.5 signature verification accepts extra DigestAlgorithm elements. \
+No fixed release exists. Users: @backstage/backend-defaults and selfsigned generate/parse the local \
+self-signed dev certificate, and mockttp (test helper); none verify RSA signatures from untrusted \
+parties. Re-check when node-forge ships a fix."""
+
+[[IgnoredVulns]]
+id = "GHSA-rj75-hqrm-r3gf"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """postcss-selector-parser 6.x quadratic parsing (fixed only in 7.x). Build-time only: \
+cssnano 5 plugins (postcss-calc, postcss-merge-rules, postcss-minify-selectors) in the Backstage \
+CLI bundler, parsing this repository's own CSS. Not shipped to or run on user input. Waiting on the \
+Backstage CLI to move to cssnano with postcss-selector-parser 7."""
+
+[[IgnoredVulns]]
+id = "GHSA-337j-9hxr-rhxg"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """react-router constructor injection in deserializeErrors() during SSR hydration; fixed only \
+in 7.18.0. The portal is a client-rendered SPA (no React Router framework/SSR mode), so the \
+vulnerable hydration path is not used. Backstage's frontend still requires react-router 6; a v7 \
+move must follow Backstage's own migration."""
+
+[[IgnoredVulns]]
+id = "GHSA-wrjc-x8rr-h8h6"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """react-router open redirect via backslash paths in <Link>/useNavigate; fixed only in 7.18.0. \
+Backstage's frontend framework still requires react-router 6 (no 6.x fix exists). The app's own \
+routes are static; risk is limited to plugins navigating to attacker-supplied paths. Tracked as \
+known debt until Backstage supports react-router 7."""
+
+[[IgnoredVulns]]
+id = "GHSA-hp3w-g68c-fv3c"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """sprintf-js 1.0.3 DoS via unbounded precision specifiers. No fixed release exists. Reached \
+only through argparse 1 (js-yaml 3) in Backstage CLI tooling, with format strings fixed in code, \
+never user-controlled. Re-check when a fix ships."""
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """uuid <11.1.1 missing buffer bounds check in v3/v5/v6 when a caller passes an output buf. \
+Fixed only in 11.x+. Old majors come from transitive deps (sockjs, @material-table/core, gaxios, \
+google-gax, teeny-request, dockerode, mockttp) that call uuid v1()/v4() without a caller-supplied \
+buffer (checked in node_modules), so the affected v3/v5/v6 buf path is not used. Waiting on those packages to move to uuid 11+."""
