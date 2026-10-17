@@ -1,8 +1,8 @@
 system_id: bookchaowalit/book-products/solo-empire-backstage
 prefix: CARD
-brand: "SOLO EMPIRE BACKSTAGE"
-subtitle: "Backstage developer portal ที่ยังใกล้ scaffold ต้นฉบับ"
-footer: "Solo Empire Backstage — Product Card"
-color: "#2f4b6e"
+brand: 'SOLO EMPIRE BACKSTAGE'
+subtitle: 'Backstage developer portal ที่ยังใกล้ scaffold ต้นฉบับ'
+footer: 'Solo Empire Backstage — Product Card'
+color: '#2f4b6e'
 audience: internal
 tier: L0
